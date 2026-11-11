@@ -51,7 +51,7 @@ resource "azurerm_linux_virtual_machine" "maszyna" {
   tags                            = var.tags
   admin_ssh_key {
     username   = "student"
-    public_key = file("~/.ssh/id_rsa.pub")
+    public_key = file(pathexpand("~/.ssh/id_rsa.pub"))
   }
   os_disk {
     caching              = "ReadWrite"
