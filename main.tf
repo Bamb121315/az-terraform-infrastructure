@@ -79,7 +79,7 @@ provider "azurerm" {
         name = "${var.env_prefix}-NSG"
         location = var.location
         resource_group_name = azurerm_resource_group.rg_stud.name
-        tags = var.tags
+
 
         security_rule {
             name = "Allow-SSH"
@@ -97,6 +97,21 @@ provider "azurerm" {
     resource "azurerm_network_interface_security_group_association" "NSG_CARD" { 
         network_interface_id = azurerm_network_interface.karta.id
         network_security_group_id = azurerm_network_security_group.NSG.id
-        tags = var.tags
     }
     
+    data "azurerm_client_config" "current" {}
+    
+    resource "azurerm_virtual_machine_extension" "ad-login" {
+        name = "AADSSHLoginForLinux"
+        virtual_machine_id = azurerm_linux_virtual_machine.maszyna.id
+        publisher = "Microsoft.Azure.ActiveDirectory"
+        type = "AADSSHLoginForLinux"
+        type_handler_version = "1.0"
+        auto_upgrade_minor_version = true
+    }
+
+    resource "azurerm_role_assignment" "vm_adm_log" {
+        scope = azurerm_linux_virtual_machine.maszyna.id
+        role_definition_name = "Virtual Machine Administrator Login"
+        principal_id = data.azurerm_client_config.current.object_id
+    }
