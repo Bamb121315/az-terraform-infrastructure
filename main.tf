@@ -11,23 +11,27 @@ provider "azurerm" {
     resource "azurerm_resource_group" "rg_stud" {
         name ="${var.env_prefix}-RG"
         location = var.location
+        tags = var.tags
     }
     resource "azurerm_virtual_network" "siec" {
         name ="${var.env_prefix}-VNET"
         address_space = ["10.0.0.0/16"]
         location = var.location
         resource_group_name = azurerm_resource_group.rg_stud.name
+        tags = var.tags
     }
     resource "azurerm_subnet" "podsiec" {
         name = "${var.env_prefix}-Subnet_linux"
         resource_group_name = azurerm_resource_group.rg_stud.name
         virtual_network_name = azurerm_virtual_network.siec.name
         address_prefixes = ["10.0.1.0/24"]
+        tags = var.tags
     }
     resource "azurerm_network_interface" "karta" {
         name = "${var.env_prefix}-linux-NIC"
         location = var.location
         resource_group_name = azurerm_resource_group.rg_stud.name
+        tags = var.tags
 
         ip_configuration {
             name = "${var.env_prefix}-internal"
@@ -44,6 +48,7 @@ provider "azurerm" {
         admin_username = "student"
         disable_password_authentication = true
         network_interface_ids = [azurerm_network_interface.karta.id]
+        tags = var.tags
         admin_ssh_key {
             username = "student"
             public_key = file("~/.ssh/id_rsa.pub")
@@ -65,6 +70,7 @@ provider "azurerm" {
         name = "${var.env_prefix}-PublicIP"
         location = var.location
         resource_group_name = azurerm_resource_group.rg_stud.name
+        tags = var.tags
         allocation_method = "Static"
         sku = "Standard"
     }
@@ -73,6 +79,7 @@ provider "azurerm" {
         name = "${var.env_prefix}-NSG"
         location = var.location
         resource_group_name = azurerm_resource_group.rg_stud.name
+        tags = var.tags
 
         security_rule {
             name = "Allow-SSH"
@@ -90,4 +97,6 @@ provider "azurerm" {
     resource "azurerm_network_interface_security_group_association" "NSG_CARD" { 
         network_interface_id = azurerm_network_interface.karta.id
         network_security_group_id = azurerm_network_security_group.NSG.id
+        tags = var.tags
     }
+    

@@ -15,3 +15,14 @@ variable "vm_size" {
     type = string
     default = "Standard_B1s"
 }
+
+variable tags {
+    description = "Tagowanie infrastruktury"
+    type = map(string)
+    default {
+        Environment = "Dev"
+        Project = "Project-AZ"
+        ManagedBy = "Terraform"
+
+    }
+}
