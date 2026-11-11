@@ -25,5 +25,10 @@ jobs:
       - name: Initialize Terraform (Code Only)
         run: terraform init -backend=false
 
+      - name: Create Dummy SSH Key for Validation
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keygen -t rsa -b 2048 -f ~/.ssh/id_rsa -N ""
+
       - name: Validate Syntax and Logic
         run: terraform validate
