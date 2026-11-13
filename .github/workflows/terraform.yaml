@@ -22,6 +22,11 @@ jobs:
         run: terraform fmt -check
         continue-on-error: true
 
+      - name: Skaner tfsec (DevSecOps)
+        uses: aquasecurity/tfsec-action@v1.0.3
+        with:
+          soft_fail: true
+          
       - name: Initialize Terraform (Code Only)
         run: terraform init -backend=false
 
@@ -32,3 +37,5 @@ jobs:
 
       - name: Validate Syntax and Logic
         run: terraform validate
+
+  
