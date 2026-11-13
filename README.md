@@ -1,0 +1,1 @@
+Środowisko lokalne skonfigurowane.
