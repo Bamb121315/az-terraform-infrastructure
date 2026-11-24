@@ -1,0 +1,5 @@
+env_prefix = "dev"
+location = "francecentral"
+vm_size = "Standard_B1s"
+allowed_ssh = "YOUR_PUBLIC_IP/32"
+ssh_public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQ... user@hostname"

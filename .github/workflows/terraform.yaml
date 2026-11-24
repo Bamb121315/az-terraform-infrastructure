@@ -2,40 +2,52 @@ name: Terraform CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  verify-infrastructure:
-    name: Lint and Validate
+  validate:
+    name: Validate (${{ matrix.lab }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        lab:
+          - labs/01-vm-entra-ssh
+          - labs/02-hub-spoke-peering
+
+    defaults:
+      run:
+        working-directory: ${{ matrix.lab }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+
+      - name: Terraform Init (no backend)
+        run: terraform init -backend=false
+
+      - name: Terraform Validate
+        run: terraform validate
+
+  security-scan:
+    name: IaC Security Scan (Trivy)
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+      - name: Run Trivy IaC Scan
+        uses: aquasecurity/trivy-action@master
         with:
-          terraform_version: 1.5.0
-
-      - name: Check Formatting
-        run: terraform fmt -check
-        continue-on-error: true
-
-      - name: Skaner tfsec (DevSecOps)
-        uses: aquasecurity/tfsec-action@v1.0.3
-        with:
-          soft_fail: true
-          
-      - name: Initialize Terraform (Code Only)
-        run: terraform init -backend=false
-
-      - name: Create Dummy SSH Key for Validation
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keygen -t rsa -b 2048 -f ~/.ssh/id_rsa -N ""
-
-      - name: Validate Syntax and Logic
-        run: terraform validate
-
-  
+          scan-type: 'config'
+          scan-ref: './labs'
+          severity: 'HIGH,CRITICAL'
+          exit-code: '0'

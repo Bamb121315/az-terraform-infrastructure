@@ -1,6 +1,16 @@
-.terraform/
+**/.terraform/*
 *.tfstate
 *.tfstate.*
 *.tfvars
+*.tfvars.json
+!*.tfvars.example
+!**/*.tfvars.example
+crash.log
+crash.*.log
+.terraformrc
+terraform.rc
+*.tfplan
+.terraform.tfstate.lock.info
 id_rsa
 id_rsa.pub
+*.pem
